@@ -26,14 +26,7 @@ initializeServer();
 
 app.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
-  let hashedPassword;
-  try {
-    hashedPassword = await bcrypt.hash(password, 10);
-  } catch (err) {
-    console.error("Hashing error:", err);
-    return res.status(500).send("Error while hashing password");
-  }
-
+  
   const selectUserQuery = `SELECT * FROM users WHERE name = "${name}"`;
   let dbUser;
   try {
@@ -49,9 +42,9 @@ app.post('/register', async (req, res) => {
 
   const createUserQuery = `INSERT INTO users (name, email, password) 
   VALUES (
-  "${name}",
-  "${email}",
-  "${hashedPassword}")`;
+  '${name}',
+  '${email}',
+  '${password}')`;
   try {
     await db.run(createUserQuery);
     return res.status(201).send('Created new user');
