@@ -7,7 +7,7 @@
       }
     ],
     "routes": [
-      { "src": "/api/register", "dest": "/index.js" },
-      { "src": "/api/login", "dest": "/index.js" }
+      { "src": "/register", "dest": "/index.js" },
+      { "src": "/login", "dest": "/index.js" }
     ]
   }
