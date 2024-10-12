@@ -1,11 +1,10 @@
+
 const express = require('express');
 const path = require('path');
 const bcrypt = require('bcrypt');
-
 const { open } = require('sqlite');
 const sqlite3 = require('sqlite3');
 const app = express();
-
 app.use(express.json());
 
 const dbPath = path.join(__dirname, 'website.db');
@@ -25,33 +24,45 @@ const initializeServer = async () => {
 
 initializeServer();
 
-
-
 app.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  
-  console.log(name, email,password)
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(password, 10);
+  } catch (err) {
+    console.error("Hashing error:", err);
+    return res.status(500).send("Error while hashing password");
+  }
 
-  const selectUserQuery = `SELECT * FROM users WHERE name = '${name}'`;
-  const dbUser = await db.get(selectUserQuery);
+  const selectUserQuery = `SELECT * FROM users WHERE name = "${name}"`;
+  let dbUser;
+  try {
+    dbUser = await db.get(selectUserQuery);
+  } catch (err) {
+    console.error("Select user error:", err);
+    return res.status(500).send("Error while selecting user");
+  }
+
   if (dbUser) {
-    res.status(400).send('User already exists');
- } else {
-    const createUserQuery = `INSERT INTO users (name, email, password) 
-    VALUES (
-    '${name}',
-    '${email}',
-    '${hashedPassword}'
-    )`
-    await db.run(createUserQuery);
-    res.status(201).send('Created new user');
-   
+    return res.status(400).send('User already exists');
+  }
 
- }
-  
+  const createUserQuery = `INSERT INTO users (name, email, password) 
+  VALUES (
+  "${name}",
+  "${email}",
+  "${hashedPassword}")`;
+  try {
+    await db.run(createUserQuery);
+    return res.status(201).send('Created new user');
+  } catch (err) {
+    console.error("Insert user error:", err);
+    return res.status(500).send('Internal Server Error');
+  }
 });
 
+
+/// login 
 app.post('/login', async (req, res) => {
   const { name, password } = req.body;
   const selectUserQuery = `SELECT * FROM users WHERE name = '${name}' `;
