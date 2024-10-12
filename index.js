@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+
 const { open } = require('sqlite');
 const sqlite3 = require('sqlite3');
 const app = express();
@@ -62,9 +62,8 @@ app.post('/login', async (req, res) => {
   } else {
     const isPasswordMatched = await bcrypt.compare(password, dbUser.password);
     if (isPasswordMatched) {
-      const payload = { name};
-      const jwtToken = jwt.sign(payload, process.env.JWT_SECRET || 'MY_SECRET_TOKEN');
-      res.send({ jwtToken });
+     
+      res.send('123');
     } else {
       res.status(400).send('Invalid Password');
     }
