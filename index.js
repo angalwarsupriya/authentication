@@ -24,7 +24,7 @@ const initializeServer = async () => {
 
 initializeServer();
 
-app.get('/login', async(req, res)=>{
+app.post('/login', async(req, res)=>{
   const profileDetails = req.body
   const {name, email} = profileDetails
   if (name==='Supriya'){
